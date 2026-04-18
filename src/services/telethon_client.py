@@ -67,6 +67,12 @@ async def stream_file_chunks(
     aligned_start = (start_byte // 4096) * 4096
     offset_correction = start_byte - aligned_start
 
+    # Convertir en int si c'est un ID numérique (chat privé bot)
+    try:
+        channel_id = int(channel_id)
+    except (ValueError, TypeError):
+        pass
+
     try:
         message = await client.get_messages(channel_id, ids=message_id)
         if not message or not message.media:
