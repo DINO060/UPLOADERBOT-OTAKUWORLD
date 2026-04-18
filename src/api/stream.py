@@ -103,10 +103,14 @@ async def download_chapter(chapter_id: str):
         if not yielded:
             print(f"[stream] Telethon n'a rien retourné pour chapter {chapter_id}")
 
-    # Ne pas mettre Content-Length : si Telethon échoue → 0 bytes → crash uvicorn
+    # PDF → inline pour l'iframe, CBZ → attachment pour JSZip fetch
+    disposition = "inline" if file_type == "pdf" else "attachment"
     headers = {
-        "Content-Disposition": f"attachment; filename=\"{file_name}\"",
+        "Content-Disposition": f"{disposition}; filename=\"{file_name}\"",
         "Transfer-Encoding": "chunked",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
     }
 
     return StreamingResponse(
